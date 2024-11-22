@@ -4,6 +4,9 @@ namespace CryptoCurrency.WebApi.DTOs.CryptoCode.SimpleCode;
 
 public record SimpleCodeResponseModel : BaseCryptoCodeResponseModel
 {
+    public SimpleCodeResponseModel()
+    {
+    }
     public SimpleCodeResponseModel(CmcResponseModel response)
     {
         LastUpdate = response.Data.Crypto![0].LastUpdated;

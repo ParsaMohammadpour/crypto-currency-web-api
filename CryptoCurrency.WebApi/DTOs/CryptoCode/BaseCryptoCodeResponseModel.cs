@@ -20,6 +20,9 @@ public abstract record BaseCryptoCodeResponseModel
 /// </summary>
 public record Currency
 {
+    public Currency()
+    {
+    }
     public Currency(Services.CoinMarketCap.Models.Currency cur)
     {
         Price = cur.Price;
