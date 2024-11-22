@@ -1,7 +1,7 @@
 using System.Reflection;
 using CryptoCurrency.WebApi.Configurations;
 using CryptoCurrency.WebApi.Filters;
-using CryptoCurrency.WebApi.Services.HttpClients.CoinMarketCap;
+using CryptoCurrency.WebApi.Services.CoinMarketCap;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Scalar.AspNetCore;
@@ -18,12 +18,6 @@ builder.Services.AddOpenApi();
 var cmcConf = builder.Configuration.GetSection(CoinMarketCapConfig.AppSettingName).Get<CoinMarketCapConfig>();
 builder.Services.AddSingleton<ICoinMarketCapConfig>(cmcConf ?? throw new ArgumentNullException());
 
-builder.Services.AddControllers(config =>
-{
-    config.Filters.Add(typeof(ExceptionHandlerAttribute));
-    config.Filters.Add(typeof(ValidateModelAttribute));
-});
-
 // Adding validation for request models
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 builder.Services.AddFluentValidationAutoValidation();
@@ -31,8 +25,18 @@ builder.Services.AddFluentValidationAutoValidation();
 // Adding HttpClient
 builder.Services.AddHttpClient();
 
+// Adding services
+builder.Services.AddScoped<ICmcServices, CmcServices>();
+
 // Adding Typed HttpClient
-builder.Services.AddHttpClient<ICmcHttpClientService, CmcHttpClientService>();
+builder.Services.ConfigCmcHttpClient(cmcConf);
+
+builder.Services.AddControllers(config =>
+{
+    // Adding filters to be applied in each api input
+    config.Filters.Add(typeof(ExceptionHandlerAttribute));
+    config.Filters.Add(typeof(ValidateModelAttribute));
+});
 
 var app = builder.Build();
 
